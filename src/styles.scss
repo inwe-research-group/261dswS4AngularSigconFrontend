@@ -1,1 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
+@use "sass:map";
+@use "abstracts/shared" as *;
+
+/* Bootstrap Overrides */
+:root {
+  --bs-primary: #000080;
+  --bs-primary-rgb: 0, 0, 128;
+  --bs-link-color: #000080;
+  --bs-link-hover-color: #000066;
+}
+
+/* Bootstrap Button Overrides */
+.btn-primary {
+  --bs-btn-bg: #000080;
+  --bs-btn-border-color: #000080;
+  --bs-btn-hover-bg: #000066;
+  --bs-btn-hover-border-color: #000066;
+  --bs-btn-active-bg: #000044;
+  --bs-btn-active-border-color: #000044;
+  --bs-btn-disabled-bg: #000080;
+  --bs-btn-disabled-border-color: #000080;
+}
+
+
