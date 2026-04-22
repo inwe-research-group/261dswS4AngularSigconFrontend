@@ -1,6 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 @use "sass:map";
 @use "abstracts/shared" as *;
+// 1. Importar los Iconos de Bootstrap
+@use "bootstrap-icons/font/bootstrap-icons.css";
+
+// 2. Importar Bootstrap (Sass)
+// Esto te permite usar variables, mixins y todas las funciones de Bootstrap
+@use "bootstrap/scss/bootstrap";
+
 
 /* Bootstrap Overrides */
 :root {
@@ -22,4 +29,38 @@
   --bs-btn-disabled-border-color: #000080;
 }
 
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: rem(20px);
+}
 
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
+header {
+  width: 100%;
+}
+
+.brand-logo {
+  display: block;
+}
+
+.text-shadow {
+  text-shadow: rem(2px) rem(2px) rem(4px) rgba(0,0,0,0.5);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border: rem(1px) solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s;
+  &:hover {
+    transform: translateY(rem(-10px));
+    background: rgba(255, 255, 255, 0.2);
+  }
+}

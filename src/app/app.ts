@@ -1,17 +1,16 @@
 import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterOutlet,RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
+import { Header } from './components/header/header';
+import { Footer } from './components/footer/footer';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, Header, Footer],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
   protected readonly title = signal('261dswS4AngularSigconFrontend');
 
-  logout(){
 
-  }
 }
