@@ -4,6 +4,8 @@ import { Router, RouterModule } from '@angular/router';
 import { Location } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
+import { UserRequest } from '../../model/api/request/user-request';
+import { UserResponse } from '../../model/api/response/user-response';
 @Component({
   selector: 'app-inicio-sesion',
   imports: [ReactiveFormsModule, RouterModule],
@@ -14,7 +16,9 @@ export class InicioSesion {
   location = inject(Location);
   router = inject(Router);
   authService = inject(AuthService);
-  toastService = inject(ToastService)
+  toastService = inject(ToastService);
+  userRequest:UserRequest={} as UserRequest;
+  userResponse:UserResponse={} as UserResponse;
 
   form = new FormGroup({
     email: new FormControl('', [Validators.required]),
@@ -27,14 +31,24 @@ export class InicioSesion {
     const { email, password } = this.form.value;
     if (!email || !password) return;
 
-    if (this.authService.login(email, password)) {
-      this.toastService.show('Ingreso exitoso', 'success');
-      console.log('Login successful');
-      this.router.navigate(['/']);
-    } else {
-      this.toastService.show('Ingreso fallido', 'danger');//ALT+96: ` acento grave o invertido
-      console.log('Login failed');
-    }
+    this.userRequest.email=email;
+    this.userRequest.password=password;
+
+    this.authService.login(this.userRequest).subscribe(
+      (result: UserResponse)=>{
+        this.userResponse=result;
+        console.log(this.userResponse);
+        this.toastService.show('Ingreso exitoso', 'success');
+        console.log('Login successful');
+        this.router.navigate(['/']);
+      },
+      (err:any)=>{
+        console.log(err);
+        this.toastService.show('Ingreso fallido', 'danger');//ALT+96: ` acento grave o invertido
+        console.log('Login failed');
+      },
+    );
+
   }
 
   onBack() {
