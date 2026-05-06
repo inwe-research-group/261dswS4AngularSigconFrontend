@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
 import { UserRequest } from '../../model/api/request/user-request';
 import { UserResponse } from '../../model/api/response/user-response';
+import { SessionService } from '../../services/session.service';
 @Component({
   selector: 'app-inicio-sesion',
   imports: [ReactiveFormsModule, RouterModule],
@@ -17,6 +18,8 @@ export class InicioSesion {
   router = inject(Router);
   authService = inject(AuthService);
   toastService = inject(ToastService);
+  sessionService = inject(SessionService);
+
   userRequest:UserRequest={} as UserRequest;
   userResponse:UserResponse={} as UserResponse;
 
@@ -38,6 +41,10 @@ export class InicioSesion {
       (result: UserResponse)=>{
         this.userResponse=result;
         console.log(this.userResponse);
+
+        this.authService.setToken(this.userResponse.token);
+        console.log(this.sessionService.getInfoSession());
+
         this.toastService.show('Ingreso exitoso', 'success');
         console.log('Login successful');
         this.router.navigate(['/']);
