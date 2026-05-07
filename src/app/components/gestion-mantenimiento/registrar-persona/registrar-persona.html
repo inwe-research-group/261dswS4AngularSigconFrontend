@@ -1,16 +1,141 @@
-<form>
-  <div class="mb-3">
-    <label for="exampleInputEmail1" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+<div class="container p-0">
+  <div class="row">
+    <h5>{{ title }}</h5>
+    <div class="card">
+      <div class="card-body">
+        <form class="form-group" [formGroup]="personaForm">
+          <div class="row mb-2">
+            <label for="apellidoPaterno" class="col-form-label col-sm-2">Apellido Paterno:</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="apellidoPaterno" placeholder="Apellido Paterno" formControlName="apellidoPaterno"/>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <label for="apellidoMaterno" class="col-form-label col-sm-2">Apellido Materno:</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="apellidoMaterno" placeholder="Apellido Materno" formControlName="apellidoMaterno"/>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <label for="nombres" class="col-form-label col-sm-2">Nombres:</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="nombres" placeholder="Nombres" formControlName="nombres"/>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <label for="idSexo" class="col-form-label col-sm-2">Genero:</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="idSexo" formControlName="idSexo" aria-label="Floating label select example">
+                <option selected>seleccione el Genero</option>
+                <option value="1">Femenino</option>
+                <option value="2">Masculino</option>
+                <option value="3">Indeterminado</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <label for="fechaNacimiento" class="col-form-label col-sm-2">Fecha Nacimiento:</label>
+            <div class="col-sm-4">
+              <input type="date" class="form-control" id="fechaNacimiento" formControlName="fechaNacimiento"/>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <label for="idTipoDocumento" class="col-form-label col-sm-2">Tipo Documento:</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="idTipoDocumento" formControlName="idTipoDocumento" aria-label="Floating label select example">
+                <option selected>seleccione tipo de documento</option>
+                <option value="1">DNI</option>
+                <option value="2">Carne Extranjeria</option>
+                <option value="3">Otro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <label for="numDocumento" class="col-form-label col-sm-2">N° Documento:</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="numDocumento" placeholder="N° Documento" formControlName="numDocumento"/>
+            </div>
+          </div>
+
+           <div class="row mb-2">
+            <label for="telefono" class="col-form-label col-sm-2">Telefono:</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="telefono" placeholder="Telefono" formControlName="telefono"/>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <label for="direccion" class="col-form-label col-sm-2">Direccion:</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="direccion" placeholder="Direccion" formControlName="direccion"/>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <label for="idUbigeo" class="col-form-label col-sm-2">Ubigeo:</label>
+            <div class="col-sm-4">
+              <select class="form-select" id="idUbigeo" formControlName="idUbigeo" aria-label="Floating label select example">
+                <option selected>seleccione el ubigeo</option>
+                <option value="1">Lima</option>
+                <option value="2">San Miguel</option>
+                <option value="3">Otro</option>
+              </select>
+            </div>
+          </div>
+
+        </form>
+      </div> <!--end card-body-->
+    </div> <!--end card-->
+    <div class="card">
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Apellido Paterno</th>
+              <th scope="col">Apellido Materno</th>
+              <th scope="col">Nombres</th>
+              <th scope="col">Genero</th>
+              <th scope="col">Fecha Nacimiento</th>
+              <th scope="col">Tipo Documento</th>
+              <th scope="col">N° Documento</th>
+              <th scope="col">Telefono</th>
+              <th scope="col">Direccion</th>
+              <th scope="col">Ubigeo</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(persona of personaArray; track persona.idPersona; let i=$index){
+              <tr>
+                <td>{{ i+1 }}</td>
+                <td>{{ persona.apellidoPaterno }}</td>
+                <td>{{ persona.apellidoMaterno }}</td>
+                <td>{{ persona.nombres }}</td>
+                <td>{{ persona.sexo.descripcion }}</td>
+                <td>{{ persona.fechaNacimiento }}</td>
+                <td>{{ persona.tipoDocumento.descripcion }}</td>
+                <td>{{ persona.numDocumento }}</td>
+                <td>{{ persona.telefono }}</td>
+                <td>{{ persona.direccion }}</td>
+                @if(persona.ubigeo){
+                    <td>{{ persona.ubigeo.departamento+"|"+ persona.ubigeo.provincia+"|"+ persona.ubigeo.distrito}}</td>
+                }@else{
+                    <td>Sin ubigeo</td>
+                }
+
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
   </div>
-  <div class="mb-3">
-    <label for="exampleInputPassword1" class="form-label">Password</label>
-    <input type="password" class="form-control" id="exampleInputPassword1">
-  </div>
-  <div class="mb-3 form-check">
-    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+
+</div>
