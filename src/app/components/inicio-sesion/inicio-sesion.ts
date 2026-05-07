@@ -47,7 +47,7 @@ export class InicioSesion {
 
         this.toastService.show('Ingreso exitoso', 'success');
         console.log('Login successful');
-        this.router.navigate(['/']);
+        this.router.navigate(['/dashboard']);
       },
       (err:any)=>{
         console.log(err);
