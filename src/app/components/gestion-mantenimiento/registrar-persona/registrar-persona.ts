@@ -66,6 +66,19 @@ export class RegistrarPersona implements OnInit{
     });
   }//end getPersonas()
 
+  registrarPersona():void{
+
+
+  }//end registrarPersona()
+
+  editarPersona(persona: PersonaResponse):void{
+
+  }
+
+  eliminarPersona(persona: PersonaResponse):void{
+
+  }
+
   getTipoDocumento():void{
     this.tipoDocumentoService.getTipoDocumento().subscribe(
     (result:TipoDocumento[])=>{

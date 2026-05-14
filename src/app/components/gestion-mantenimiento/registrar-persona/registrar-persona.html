@@ -104,6 +104,13 @@
               </select>
             </div>
           </div>
+          <button
+          type="submit"
+          class="btn btn-primary"
+          (click)="registrarPersona()"
+          >
+          Registrar
+          </button>
 
         </form>
       </div> <!--end card-body-->
@@ -146,6 +153,18 @@
                 }@else{
                     <td>Sin ubigeo</td>
                 }
+                <td>
+                  <button class="btn btn-secondary rounded-circle p-2 lh-1"
+                  (click)="editarPersona(persona)">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                </td>
+                <td>
+                  <button class="btn btn-danger rounded-circle p-2 lh-1"
+                  (click)="eliminarPersona(persona)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
               </tr>
             }
           </tbody>
