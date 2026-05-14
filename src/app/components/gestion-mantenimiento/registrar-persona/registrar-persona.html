@@ -127,7 +127,9 @@
             </tr>
           </thead>
           <tbody>
-            @for(persona of personaArray; track persona.idPersona; let i=$index){
+            @for(persona of personaArray | paginate: {itemsPerPage:10, currentPage:page};
+            track persona.idPersona;
+            let i=$index){
               <tr>
                 <td>{{ i+1 }}</td>
                 <td>{{ persona.apellidoPaterno }}</td>
@@ -148,6 +150,12 @@
             }
           </tbody>
         </table>
+        <pagination-controls
+        (pageChange)="page = $event"
+        previousLabel="Anterior"
+        nextLabel="Siguiente"
+        >
+        </pagination-controls>
       </div>
 
     </div>

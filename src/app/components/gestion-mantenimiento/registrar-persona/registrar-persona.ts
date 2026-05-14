@@ -10,10 +10,11 @@ import { SexoService } from '../../../services/sexo.service';
 import { TipoDocumento } from '../../../model/tipo-documento';
 import { Ubigeo } from '../../../model/ubigeo';
 import { Sexo } from '../../../model/sexo';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
   selector: 'app-registrar-persona',
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule,ReactiveFormsModule,NgxPaginationModule],
   templateUrl: './registrar-persona.html',
   styleUrl: './registrar-persona.scss',
 })
@@ -32,6 +33,8 @@ export class RegistrarPersona implements OnInit{
 
   personaRequest:PersonaRequest={} as PersonaRequest;
   personaForm:FormGroup;
+  page:number=1;
+
 
   constructor(){
     this.personaForm=new FormGroup({
