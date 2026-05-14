@@ -66,7 +66,32 @@ export class RegistrarPersona implements OnInit{
     });
   }//end getPersonas()
 
+  setPersonaRequest():void{
+    this.personaRequest.idPersona=this.personaForm.get('idPersona')?.value;
+    this.personaRequest.apellidoPaterno=this.personaForm.get('apellidoPaterno')?.value;
+    this.personaRequest.apellidoMaterno=this.personaForm.get('apellidoMaterno')?.value;
+    this.personaRequest.nombres=this.personaForm.get('nombres')?.value;
+    this.personaRequest.idSexo=this.personaForm.get('idSexo')?.value;
+    this.personaRequest.fechaNacimiento=this.personaForm.get('fechaNacimiento')?.value;
+    this.personaRequest.idTipoDocumento=this.personaForm.get('idTipoDocumento')?.value;
+    this.personaRequest.numDocumento=this.personaForm.get('numDocumento')?.value;
+    this.personaRequest.direccion=this.personaForm.get('direccion')?.value;
+    this.personaRequest.telefono=this.personaForm.get('telefono')?.value;
+    this.personaRequest.idUbigeo=this.personaForm.get('idUbigeo')?.value;
+  }
+
   registrarPersona():void{
+    this.setPersonaRequest();
+    console.log(this.personaRequest);
+    this.personaService.registrarPersona(this.personaRequest).subscribe(
+      (result:any)=>{
+        console.log(result);
+        this.getPersonas();
+      },
+      (err:any)=>{
+        console.log(err);
+      }
+    );
 
 
   }//end registrarPersona()
