@@ -11,6 +11,7 @@ import { TipoDocumento } from '../../../model/tipo-documento';
 import { Ubigeo } from '../../../model/ubigeo';
 import { Sexo } from '../../../model/sexo';
 import { NgxPaginationModule } from 'ngx-pagination';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-registrar-persona',
@@ -105,46 +106,147 @@ export class RegistrarPersona implements OnInit{
   }
 
   insertarPersona():void{
-    this.personaService.registrarPersona(this.personaRequest).subscribe(
-      (result:any)=>{
-        console.log(result);
-        this.getPersonas();
-      },
-      (err:any)=>{
-        console.log(err);
-      }
-    );
+    Swal.fire({
+      title:'Esta seguro de registrar los datos de la persona?',
+      showCancelButton:true,
+      cancelButtonText:'No',
+      confirmButtonText:'Si',
+      confirmButtonColor:'#000080',
+      cancelButtonColor: '#ff0000',
+      focusCancel:true,
+    }).then((result)=>{
+      if(result.isConfirmed){
+        this.personaService.registrarPersona(this.personaRequest).subscribe(
+        (result:PersonaResponse)=>{
+          this.cdr.detectChanges()
+          this.refreshForm();
+          Swal.fire({
+            icon:'success',
+            title:'registrarPersona...',
+            text:'!Se registro exitosamente los datos de la persona',
+            confirmButtonColor:'#000080'
+          });
+        },
+        (err:any)=>{
+          console.log(err);
+          Swal.fire({
+            icon:'error',
+            title:'Advertencia...',
+            text:'!Ah ocurrido un error al registrar persona',
+            confirmButtonColor:'#000080'
+          });
+        }//cierre del err
+        );//cierre del suscribe
+      }//end if
+    })//end then
   }//end insertarPersona()
 
   actualizarPersona():void{
-    console.log('actualizarPersona1',this.personaRequest);
-    this.personaService.updatePersona(this.personaRequest).subscribe((result:PersonaResponse)=>{
-      console.log('actualizarPersona2',result);
-      this.cdr.detectChanges()
-      this.refreshForm();
-    });
+    Swal.fire({
+      title:'Esta seguro de actualizar los datos de la persona?',
+      showCancelButton:true,
+      cancelButtonText:'No',
+      confirmButtonText:'Si',
+      confirmButtonColor:'#000080',
+      cancelButtonColor: '#ff0000',
+      focusCancel:true,
+    }).then((result)=>{
+      if(result.isConfirmed){
+        this.personaService.updatePersona(this.personaRequest).subscribe(
+        (result:PersonaResponse)=>{
+          this.cdr.detectChanges()
+          this.refreshForm();
+          Swal.fire({
+            icon:'success',
+            title:'actualizarPersona...',
+            text:'!Se actualizó exitosamente los datos de la persona',
+            confirmButtonColor:'#000080'
+          });
+        },
+        (err:any)=>{
+          console.log(err);
+          Swal.fire({
+            icon:'error',
+            title:'Advertencia...',
+            text:'!Ah ocurrido un error al actualizar persona',
+            confirmButtonColor:'#000080'
+          });
+        }//cierre del err
+        );//cierre del suscribe
+      }//end if
+    })//end then
+
   }
 
-  editarPersona(persona: PersonaResponse):void{
-    this.personaForm.patchValue({
-      idPersona:persona.idPersona,
-      apellidoPaterno:persona.apellidoPaterno,
-      apellidoMaterno:persona.apellidoMaterno,
-      nombres:persona.nombres,
-      idSexo:persona?.sexo?.idSexo,
-      fechaNacimiento:persona.fechaNacimiento,
-      idTipoDocumento:persona?.tipoDocumento?.idTipoDocumento,
-      numDocumento:persona.numDocumento,
-      telefono:persona.telefono,
-      direccion:persona.direccion,
-      idUbigeo:persona?.ubigeo?.idUbigeo,
-    });
-    this.isEdited=true;
+  editarPersona(persona:PersonaResponse):void{
+     Swal.fire({
+      title:'Esta seguro de editar los datos de la persona?',
+      showCancelButton:true,
+      cancelButtonText:'No',
+      confirmButtonText:'Si',
+      confirmButtonColor:'#000080',
+      cancelButtonColor: '#ff0000',
+      focusCancel:true,
+    }).then((result)=>{
+      if(result.isConfirmed){
+        this.personaForm.patchValue({
+          idPersona:persona.idPersona,
+          apellidoPaterno:persona.apellidoPaterno,
+          apellidoMaterno:persona.apellidoMaterno,
+          nombres:persona.nombres,
+          idSexo:persona?.sexo?.idSexo,
+          fechaNacimiento:persona.fechaNacimiento,
+          idTipoDocumento:persona?.tipoDocumento?.idTipoDocumento,
+          numDocumento:persona.numDocumento,
+          telefono:persona.telefono,
+          direccion:persona.direccion,
+          idUbigeo:persona?.ubigeo?.idUbigeo,
+        });
+        this.isEdited=true;
+      }//end if
+    })//end then
+
   }
 
   eliminarPersona(persona: PersonaResponse):void{
+    Swal.fire({
+      title:'Esta seguro de eliminar la persona seleccionada?',
+      showCancelButton:true,
+      cancelButtonText:'No',
+      confirmButtonText:'Si',
+      confirmButtonColor:'#000080',
+      cancelButtonColor: '#ff0000',
+      focusCancel:true,
+    }).then((result)=>{
+      if(result.isConfirmed){
+        const request:PersonaRequest={...this.personaRequest, idPersona:persona.idPersona}
+        console.log(request);
+        this.personaService.deletePersona(request).subscribe(
+        (result:PersonaResponse)=>{
+          this.cdr.detectChanges()
+          this.refreshForm();
+          Swal.fire({
+            icon:'success',
+            title:'eliminarPersona...',
+            text:'!Se eliminó exitosamente la persona',
+            confirmButtonColor:'#000080'
+          });
+        },
+        (err:any)=>{
+          console.log(err);
+          Swal.fire({
+            icon:'error',
+            title:'Advertencia...',
+            text:'!Ah ocurrido un error al eliminar persona',
+            confirmButtonColor:'#000080'
+          });
+        }//cierre del err
+        );//cierre del suscribe
+      }//end if
+    })//end then
 
   }
+
 
   getTipoDocumento():void{
     this.tipoDocumentoService.getTipoDocumento().subscribe(
