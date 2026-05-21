@@ -64,9 +64,24 @@ export class RegistrarPersona implements OnInit{
     this.personaService.getPersonas().subscribe((result:any)=>{
       //console.log(result);
       this.personaArray=result;
-      this.cdr.detectChanges
+      this.cdr.detectChanges()
     });
   }//end getPersonas()
+
+  setFormValueIni(){
+    this.personaForm.patchValue({
+      idSexo:'I',
+      idTipoDocumento: '1',
+      idUbigeo: '150101'
+    });
+  }
+
+  refreshForm(){
+    this.getPersonas();
+    this.personaForm.reset();
+    this.isEdited=false;
+    this.setFormValueIni();
+  }
 
   setPersonaRequest():void{
     this.personaRequest.idPersona=this.personaForm.get('idPersona')?.value;
@@ -84,7 +99,12 @@ export class RegistrarPersona implements OnInit{
 
   registrarPersona():void{
     this.setPersonaRequest();
-    console.log(this.personaRequest);
+    if(this.isEdited) this.actualizarPersona();
+    else
+      this.insertarPersona();
+  }
+
+  insertarPersona():void{
     this.personaService.registrarPersona(this.personaRequest).subscribe(
       (result:any)=>{
         console.log(result);
@@ -94,9 +114,16 @@ export class RegistrarPersona implements OnInit{
         console.log(err);
       }
     );
+  }//end insertarPersona()
 
-
-  }//end registrarPersona()
+  actualizarPersona():void{
+    console.log('actualizarPersona1',this.personaRequest);
+    this.personaService.updatePersona(this.personaRequest).subscribe((result:PersonaResponse)=>{
+      console.log('actualizarPersona2',result);
+      this.cdr.detectChanges()
+      this.refreshForm();
+    });
+  }
 
   editarPersona(persona: PersonaResponse):void{
     this.personaForm.patchValue({

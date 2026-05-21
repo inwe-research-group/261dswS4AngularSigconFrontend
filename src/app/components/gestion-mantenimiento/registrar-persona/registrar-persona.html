@@ -142,9 +142,17 @@
                 <td>{{ persona.apellidoPaterno }}</td>
                 <td>{{ persona.apellidoMaterno }}</td>
                 <td>{{ persona.nombres }}</td>
-                <td>{{ persona.sexo.descripcion }}</td>
+                @if(persona.sexo){
+                    <td>{{ persona.sexo.descripcion }}</td>
+                }@else{
+                  <td>Sin Género</td>
+                }
                 <td>{{ persona.fechaNacimiento }}</td>
-                <td>{{ persona.tipoDocumento.descripcion }}</td>
+                @if(persona.tipoDocumento){
+                  <td>{{ persona.tipoDocumento.descripcion }}</td>
+                }@else{
+                  <td>Sin Tipo Documento</td>
+                }
                 <td>{{ persona.numDocumento }}</td>
                 <td>{{ persona.telefono }}</td>
                 <td>{{ persona.direccion }}</td>
