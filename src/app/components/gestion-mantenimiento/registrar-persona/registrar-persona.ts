@@ -34,6 +34,7 @@ export class RegistrarPersona implements OnInit{
   personaRequest:PersonaRequest={} as PersonaRequest;
   personaForm:FormGroup;
   page:number=1;
+  isEdited:boolean=false;
 
 
   constructor(){
@@ -61,8 +62,9 @@ export class RegistrarPersona implements OnInit{
 
   getPersonas():void{
     this.personaService.getPersonas().subscribe((result:any)=>{
-      console.log(result);
+      //console.log(result);
       this.personaArray=result;
+      this.cdr.detectChanges
     });
   }//end getPersonas()
 
@@ -97,7 +99,20 @@ export class RegistrarPersona implements OnInit{
   }//end registrarPersona()
 
   editarPersona(persona: PersonaResponse):void{
-
+    this.personaForm.patchValue({
+      idPersona:persona.idPersona,
+      apellidoPaterno:persona.apellidoPaterno,
+      apellidoMaterno:persona.apellidoMaterno,
+      nombres:persona.nombres,
+      idSexo:persona?.sexo?.idSexo,
+      fechaNacimiento:persona.fechaNacimiento,
+      idTipoDocumento:persona?.tipoDocumento?.idTipoDocumento,
+      numDocumento:persona.numDocumento,
+      telefono:persona.telefono,
+      direccion:persona.direccion,
+      idUbigeo:persona?.ubigeo?.idUbigeo,
+    });
+    this.isEdited=true;
   }
 
   eliminarPersona(persona: PersonaResponse):void{
@@ -107,7 +122,6 @@ export class RegistrarPersona implements OnInit{
   getTipoDocumento():void{
     this.tipoDocumentoService.getTipoDocumento().subscribe(
     (result:TipoDocumento[])=>{
-      console.log(result);
       this.tipoDocumentoArray=result;
       this.cdr.detectChanges();
     },
@@ -124,7 +138,6 @@ export class RegistrarPersona implements OnInit{
   getUbigeo():void{
     this.ubigeoService.getUbigeo().subscribe(
     (result:Ubigeo[])=>{
-      console.log(result);
       this.ubigeoArray=result;
       this.cdr.detectChanges();
     },
@@ -142,7 +155,6 @@ export class RegistrarPersona implements OnInit{
   getSexo():void{
     this.sexoService.getSexo().subscribe(
     (result:Sexo[])=>{
-      console.log(result);
       this.sexoArray=result;
       this.cdr.detectChanges();
     },
