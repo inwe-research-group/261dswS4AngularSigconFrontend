@@ -1,6 +1,6 @@
 import { Component,inject,OnInit,ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {FormControl, FormGroup,Validators,ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormGroup,Validators,ReactiveFormsModule,AbstractControl,ValidationErrors,ValidatorFn} from '@angular/forms';
 import { PersonaResponse } from '../../../model/api/response/persona-response';
 import { PersonaRequest } from '../../../model/api/request/persona-request';
 import { PersonaService } from '../../../services/persona.service';
@@ -12,10 +12,11 @@ import { Ubigeo } from '../../../model/ubigeo';
 import { Sexo } from '../../../model/sexo';
 import { NgxPaginationModule } from 'ngx-pagination';
 import Swal from 'sweetalert2';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-registrar-persona',
-  imports: [CommonModule,ReactiveFormsModule,NgxPaginationModule],
+  imports: [CommonModule,ReactiveFormsModule,NgxPaginationModule,NgbTooltip],
   templateUrl: './registrar-persona.html',
   styleUrl: './registrar-persona.scss',
 })
@@ -40,17 +41,25 @@ export class RegistrarPersona implements OnInit{
 
   constructor(){
     this.personaForm=new FormGroup({
-      idPersona:new FormControl('',[Validators.required]),
-      apellidoPaterno:new FormControl('',[Validators.required]),
-      apellidoMaterno:new FormControl('',[Validators.required]),
-      nombres:new FormControl('',[Validators.required]),
-      idSexo:new FormControl('3',[Validators.required]),
-      fechaNacimiento:new FormControl('',[Validators.required]),
-      idTipoDocumento:new FormControl('1',[Validators.required]),
-      numDocumento:new FormControl('',[Validators.required]),
-      direccion:new FormControl('',[Validators.required]),
-      telefono:new FormControl('',[Validators.required]),
-      idUbigeo:new FormControl('150101',[Validators.required]),
+      idPersona:new FormControl(''),
+      apellidoPaterno:new FormControl('',[Validators.required,Validators.pattern(/^[A-ZÑÁÉÍÓÚ][A-ZÑÁÉÍÓÚ ]{0,29}$/),]),
+      apellidoMaterno:new FormControl('',[Validators.required,Validators.pattern(/^[A-ZÑÁÉÍÓÚ][A-ZÑÁÉÍÓÚ ]{0,29}$/),]),
+      nombres:new FormControl('',[Validators.required,Validators.pattern(/^[A-ZÑÁÉÍÓÚ][A-ZÑÁÉÍÓÚ ]{0,29}$/),]),
+      idSexo:new FormControl('',Validators.required),
+      fechaNacimiento:new FormControl('',[Validators.required, this.ageRangeValidator(18, 80)]),
+      idTipoDocumento:new FormControl('',Validators.required),
+      numDocumento:new FormControl('',[Validators.required, Validators.pattern('^[0-9]{9}$'), this.noSameDigitsValidator(), this.maxConsecutiveSameDigitsValidator(4)]),
+      telefono:new FormControl('',[Validators.required, Validators.pattern('^[0-9]{9}$'), this.noSameDigitsValidator(), this.maxConsecutiveSameDigitsValidator(4)]),
+      direccion:new FormControl('', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(35),
+        Validators.pattern(/^[A-ZÑÁÉÍÓÚ][A-ZÑÁÉÍÓÚ .°-]*(\d{1,4}[A-ZÑÁÉÍÓÚ .°-]*)?$/),
+        this.noRepeatedCharsValidator()
+      ]),
+      idDepartamento:new FormControl('',Validators.required),
+      idProvincia:new FormControl('',Validators.required),
+      idDistrito:new FormControl('',Validators.required),
     });//end new FormGroup
   }//end del constructor
 
@@ -59,6 +68,79 @@ export class RegistrarPersona implements OnInit{
     this.getTipoDocumento();
     this.getUbigeo();
     this.getPersonas();
+  }
+
+  private ageRangeValidator(min: number, max: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+      const birthDate = new Date(control.value);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age >= min && age <= max ? null : { ageRange: true };
+    };
+  }
+
+  private noSameDigitsValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+      const val = control.value.toString();
+      if (val.length < 7) return null;
+      const allSame = val.split('').every((char: string) => char === val[0]);
+      return allSame ? { sameDigits: true } : null;
+    };
+  }
+
+  private maxConsecutiveSameDigitsValidator(max: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+      const val = control.value.toString();
+      const regex = new RegExp(`(.)\\1{${max},}`);
+      return regex.test(val) ? { maxConsecutive: true } : null;
+    };
+  }
+
+  private noRepeatedCharsValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+      const val = control.value.toString();
+      // Detecta 3 o más caracteres idénticos consecutivos
+      const hasRepeated = /(.)\1\1/.test(val);
+      return hasRepeated ? { repeatedChars: true } : null;
+    };
+  }
+
+  getErrorMessage(controlName: string): string {
+    const control = this.personaForm.get(controlName);
+    if (control?.touched || control?.dirty) {
+      if (control?.hasError('required')) return 'Este campo es obligatorio';
+      if (control?.hasError('ageRange')) return 'Debe tener entre 18 y 80 años';
+      if (control?.hasError('sameDigits')) return 'No se permiten todos los dígitos iguales';
+      if (control?.hasError('repeatedChars')) return 'No se permiten 3 caracteres iguales seguidos';
+      if (control?.hasError('maxConsecutive')) return 'No se permiten más de 4 dígitos iguales seguidos';
+      if (control?.hasError('pattern')) {
+        switch (controlName) {
+          case 'apellidoPaterno':
+          case 'apellidoMaterno':
+          case 'nombres':
+            return 'Solo letras mayúsculas (incluyendo Ñ y tildes), máx 30';
+          case 'numDocumento':
+            return '9 dígitos, sin 5 repetidos';
+          case 'telefono':
+            return '9 dígitos, sin 5 repetidos';
+          case 'direccion':
+            return 'Inicia con letra, un solo número (1-4 dígitos), símbolos: . ° -';
+          default:
+            return 'Formato inválido';
+        }
+      }
+      if (control?.hasError('minlength')) return `Mínimo ${control.getError('minlength').requiredLength} caracteres`;
+      if (control?.hasError('maxlength')) return `Máximo ${control.getError('maxlength').requiredLength} caracteres`;
+    }
+    return '';
   }
 
   getPersonas():void{

@@ -3,3 +3,17 @@
     background: #000080 !important;
   }
 }
+
+/* Uppercase transformation for specific fields */
+.uppercase-input {
+  text-transform: uppercase;
+}
+
+/* Ensure tooltips are readable */
+.red-tooltip {
+  .tooltip-inner {
+    background-color: #dc3545 !important;
+    color: white !important;
+    font-weight: bold;
+  }
+}

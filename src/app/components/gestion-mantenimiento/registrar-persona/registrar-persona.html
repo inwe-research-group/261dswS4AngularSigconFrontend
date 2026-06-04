@@ -7,7 +7,23 @@
           <div class="row mb-2">
             <label for="apellidoPaterno" class="col-form-label col-sm-2">Apellido Paterno:</label>
             <div class="col-sm-4">
-              <input type="text" class="form-control" id="apellidoPaterno" placeholder="Apellido Paterno" formControlName="apellidoPaterno"/>
+              <input
+              type="text"
+              class="form-control uppercase-input"
+              [class.is-invalid]="personaForm.get('apellidoPaterno')?.invalid && (personaForm.get('apellidoPaterno')?.touched || personaForm.get('apellidoPaterno')?.dirty)"
+              id="apellidoPaterno"
+              placeholder="Apellido Paterno"
+              formControlName="apellidoPaterno"
+              (input)="personaForm.get('apellidoPaterno')?.setValue($any($event.target).value.toUpperCase().replace(/[^A-ZÑÁÉÍÓÚ ]/g, '').trimStart())"
+              #apTooltip="ngbTooltip"
+              [ngbTooltip]="getErrorMessage('apellidoPaterno')"
+              triggers="manual"
+              (input)="getErrorMessage('apellidoPaterno') ? apTooltip.open() : apTooltip.close()"
+              (focus)="getErrorMessage('apellidoPaterno') ? apTooltip.open() : apTooltip.close()"
+              (blur)="apTooltip.close()"
+              tooltipClass="red-tooltip"
+              placement="top"
+              />
             </div>
           </div>
           <div class="row mb-2">
