@@ -45,3 +45,18 @@
   border-width: 2px;
 }
 
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  span {
+    margin-left: 5px;
+    font-size: 0.8em;
+  }
+}
+
