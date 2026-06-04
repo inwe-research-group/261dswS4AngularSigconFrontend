@@ -37,6 +37,8 @@ export class RegistrarPersona implements OnInit{
   personaForm:FormGroup;
   page:number=1;
   isEdited:boolean=false;
+  minDate: string = '';
+  maxDate: string = '';
 
 
   constructor(){
@@ -57,9 +59,7 @@ export class RegistrarPersona implements OnInit{
         Validators.pattern(/^[A-ZÑÁÉÍÓÚ][A-ZÑÁÉÍÓÚ .°-]*(\d{1,4}[A-ZÑÁÉÍÓÚ .°-]*)?$/),
         this.noRepeatedCharsValidator()
       ]),
-      idDepartamento:new FormControl('',Validators.required),
-      idProvincia:new FormControl('',Validators.required),
-      idDistrito:new FormControl('',Validators.required),
+      idUbigeo:new FormControl('',Validators.required),
     });//end new FormGroup
   }//end del constructor
 
@@ -211,13 +211,14 @@ export class RegistrarPersona implements OnInit{
         this.personaService.registrarPersona(this.personaRequest).subscribe(
         (result:PersonaResponse)=>{
           this.cdr.detectChanges()
-          this.refreshForm();
           Swal.fire({
             icon:'success',
             title:'registrarPersona...',
             text:'!Se registro exitosamente los datos de la persona',
             confirmButtonColor:'#000080'
-          });
+          }).then(() => {
+              this.refreshForm();
+            });
         },
         (err:any)=>{
           console.log(err);
@@ -247,13 +248,14 @@ export class RegistrarPersona implements OnInit{
         this.personaService.updatePersona(this.personaRequest).subscribe(
         (result:PersonaResponse)=>{
           this.cdr.detectChanges()
-          this.refreshForm();
           Swal.fire({
             icon:'success',
             title:'actualizarPersona...',
             text:'!Se actualizó exitosamente los datos de la persona',
             confirmButtonColor:'#000080'
-          });
+          }).then(() => {
+              this.refreshForm();
+            });
         },
         (err:any)=>{
           console.log(err);
@@ -267,37 +269,43 @@ export class RegistrarPersona implements OnInit{
         );//cierre del suscribe
       }//end if
     })//end then
-
   }
 
-  editarPersona(persona:PersonaResponse):void{
-     Swal.fire({
-      title:'Esta seguro de editar los datos de la persona?',
+  private formatDateToInput(dateInput: any): string {
+    if (!dateInput) return '';
+    const date = new Date(dateInput);
+    return !isNaN(date.getTime()) ? date.toISOString().split('T')[0] : '';
+  }
+
+  editarPersona(persona: PersonaResponse):void{
+    Swal.fire({
+      title:'Esta seguro de editar los datos de la persona',
       showCancelButton:true,
       cancelButtonText:'No',
       confirmButtonText:'Si',
       confirmButtonColor:'#000080',
-      cancelButtonColor: '#ff0000',
+      cancelButtonColor:'#ff0000',
       focusCancel:true,
     }).then((result)=>{
       if(result.isConfirmed){
         this.personaForm.patchValue({
           idPersona:persona.idPersona,
-          apellidoPaterno:persona.apellidoPaterno,
-          apellidoMaterno:persona.apellidoMaterno,
-          nombres:persona.nombres,
+          apellidoPaterno:persona.apellidoPaterno?.toUpperCase(),
+          apellidoMaterno:persona.apellidoMaterno?.toUpperCase(),
+          nombres:persona.nombres?.toUpperCase(),
           idSexo:persona?.sexo?.idSexo,
-          fechaNacimiento:persona.fechaNacimiento,
+          fechaNacimiento:this.formatDateToInput(persona.fechaNacimiento),
           idTipoDocumento:persona?.tipoDocumento?.idTipoDocumento,
           numDocumento:persona.numDocumento,
           telefono:persona.telefono,
-          direccion:persona.direccion,
-          idUbigeo:persona?.ubigeo?.idUbigeo,
+          direccion:persona.direccion?.toUpperCase(),
+          idUbigeo:persona?.ubigeo?.idUbigeo
         });
         this.isEdited=true;
-      }//end if
-    })//end then
-
+        this.personaForm.markAllAsTouched();
+        this.cdr.detectChanges();
+      }
+    })
   }
 
   eliminarPersona(persona: PersonaResponse):void{
@@ -316,13 +324,14 @@ export class RegistrarPersona implements OnInit{
         this.personaService.deletePersona(request).subscribe(
         (result:PersonaResponse)=>{
           this.cdr.detectChanges()
-          this.refreshForm();
           Swal.fire({
             icon:'success',
             title:'eliminarPersona...',
             text:'!Se eliminó exitosamente la persona',
             confirmButtonColor:'#000080'
-          });
+          }).then(() => {
+              this.refreshForm();
+            });
         },
         (err:any)=>{
           console.log(err);
@@ -351,10 +360,6 @@ export class RegistrarPersona implements OnInit{
     }
   );
   }//end getTipoDocumento()
-  setTipoDocumento(event: Event):void {
-    const inputChangeValue = (event.target as HTMLInputElement).value;
-    this.personaForm.controls['idTipoDocumento'].setValue(inputChangeValue);
-  }
 
   getUbigeo():void{
     this.ubigeoService.getUbigeo().subscribe(
@@ -368,11 +373,6 @@ export class RegistrarPersona implements OnInit{
   );
   }//end getUbigeo()
 
-  setUbigeo(event: Event):void {
-    const inputChangeValue = (event.target as HTMLInputElement).value;
-    this.personaForm.controls['idUbigeo'].setValue(inputChangeValue);
-  }
-
   getSexo():void{
     this.sexoService.getSexo().subscribe(
     (result:Sexo[])=>{
@@ -384,12 +384,4 @@ export class RegistrarPersona implements OnInit{
     }
   );
   }//end getSexo()
-
-  setSexo(event: Event):void {
-    const inputChangeValue = (event.target as HTMLInputElement).value;
-    this.personaForm.controls['idSexo'].setValue(inputChangeValue);
-  }
-
-
-
 }
