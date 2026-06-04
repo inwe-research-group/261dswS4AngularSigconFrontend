@@ -32,6 +32,9 @@ export class RegistrarPersona implements OnInit{
   tipoDocumentoArray: TipoDocumento[]=[];
   ubigeoArray: Ubigeo[]=[];
   sexoArray: Sexo[]=[];
+  departamentos: Ubigeo[] = [];
+  provincias: Ubigeo[] = [];
+  distritos: Ubigeo[] = [];
 
   personaRequest:PersonaRequest={} as PersonaRequest;
   personaForm:FormGroup;
@@ -59,7 +62,9 @@ export class RegistrarPersona implements OnInit{
         Validators.pattern(/^[A-ZÑÁÉÍÓÚ][A-ZÑÁÉÍÓÚ .°-]*(\d{1,4}[A-ZÑÁÉÍÓÚ .°-]*)?$/),
         this.noRepeatedCharsValidator()
       ]),
-      idUbigeo:new FormControl('',Validators.required),
+      idDepartamento:new FormControl('',Validators.required),
+      idProvincia:new FormControl('',Validators.required),
+      idDistrito:new FormControl('',Validators.required),
     });//end new FormGroup
   }//end del constructor
 
@@ -153,6 +158,43 @@ export class RegistrarPersona implements OnInit{
     return '';
   }
 
+  filterProvincias(idDepartamento: string | undefined): void {
+    if (idDepartamento && idDepartamento.length >= 2) {
+      const prefix = idDepartamento.substring(0, 2); // aa
+      this.provincias = this.ubigeoArray
+        .filter(u => u.idUbigeo.startsWith(prefix) &&
+                     u.idUbigeo.substring(4, 6) === '01')
+        .sort((a, b) => a.provincia.localeCompare(b.provincia));
+    } else {
+      this.provincias = [];
+    }
+  }
+
+  filterDistritos(idProvincia: string | undefined): void {
+    if (idProvincia && idProvincia.length >= 4) {
+      const prefix = idProvincia.substring(0, 4); // aabb
+      this.distritos = this.ubigeoArray
+        .filter(u => u.idUbigeo.startsWith(prefix) &&
+                     u.distrito && u.distrito.trim() !== '')
+        .sort((a, b) => a.distrito.localeCompare(b.distrito));
+    } else {
+      this.distritos = [];
+    }
+  }
+
+  onDepartamentoChange(): void {
+    const idDep = this.personaForm.get('idDepartamento')?.value;
+    this.filterProvincias(idDep);
+    this.distritos = [];
+    this.personaForm.patchValue({ idProvincia: '', idDistrito: '' });
+  }
+
+  onProvinciaChange(): void {
+    const idProv = this.personaForm.get('idProvincia')?.value;
+    this.filterDistritos(idProv);
+    this.personaForm.patchValue({ idDistrito: '' });
+  }
+
   getPersonas():void{
     this.personaService.getPersonas().subscribe((result:any)=>{
       //console.log(result);
@@ -187,7 +229,7 @@ export class RegistrarPersona implements OnInit{
     this.personaRequest.numDocumento=this.personaForm.get('numDocumento')?.value;
     this.personaRequest.direccion=this.personaForm.get('direccion')?.value;
     this.personaRequest.telefono=this.personaForm.get('telefono')?.value;
-    this.personaRequest.idUbigeo=this.personaForm.get('idUbigeo')?.value;
+    this.personaRequest.idUbigeo=this.personaForm.get('idDistrito')?.value;
   }
 
   registrarPersona():void{
@@ -288,6 +330,12 @@ export class RegistrarPersona implements OnInit{
       focusCancel:true,
     }).then((result)=>{
       if(result.isConfirmed){
+        const idDep = persona.ubigeo?.idUbigeo.substring(0, 2) + '0000';
+        const idProv = persona.ubigeo?.idUbigeo.substring(0, 4) + '01';
+
+        this.filterProvincias(idDep);
+        this.filterDistritos(idProv);
+
         this.personaForm.patchValue({
           idPersona:persona.idPersona,
           apellidoPaterno:persona.apellidoPaterno?.toUpperCase(),
@@ -299,7 +347,9 @@ export class RegistrarPersona implements OnInit{
           numDocumento:persona.numDocumento,
           telefono:persona.telefono,
           direccion:persona.direccion?.toUpperCase(),
-          idUbigeo:persona?.ubigeo?.idUbigeo
+          idDepartamento: idDep,
+          idProvincia: idProv,
+          idDistrito: persona.ubigeo?.idUbigeo
         });
         this.isEdited=true;
         this.personaForm.markAllAsTouched();
@@ -361,17 +411,34 @@ export class RegistrarPersona implements OnInit{
   );
   }//end getTipoDocumento()
 
-  getUbigeo():void{
-    this.ubigeoService.getUbigeo().subscribe(
-    (result:Ubigeo[])=>{
+  getUbigeo():void {
+    this.ubigeoService.getUbigeo().subscribe((result:Ubigeo[])=>{
       this.ubigeoArray=result;
+      this.departamentos = result
+        .filter(u => u.idUbigeo.substring(2, 6) === '0000')
+        .sort((a, b) => a.departamento.localeCompare(b.departamento));
+
+      if (!this.isEdited) {
+        this.setUbigeoDefault();
+      }
       this.cdr.detectChanges();
-    },
-    (err:any)=>{
-      console.log(err);
-    }
-  );
-  }//end getUbigeo()
+    });
+  }
+
+  setUbigeoDefault() {
+    const idDepDefault = '150000'; // Lima Departamento
+    const idProvDefault = '150101'; // Lima Provincia (regla 01)
+    const idDistDefault = '150101';
+
+    this.filterProvincias(idDepDefault);
+    this.filterDistritos(idProvDefault);
+
+    this.personaForm.patchValue({
+      idDepartamento: idDepDefault,
+      idProvincia: idProvDefault,
+      idDistrito: idDistDefault
+    });
+  }
 
   getSexo():void{
     this.sexoService.getSexo().subscribe(

@@ -17,3 +17,31 @@
     font-weight: bold;
   }
 }
+
+/* Ancho intermedio para etiquetas de Ubigeo (Alineación perfecta) */
+.col-ubigeo-label {
+    flex: 0 0 auto;
+    width: 6.8%; /* Medida intermedia entre col-1 (8.3%) y col-2 (16.6%) */
+    text-align: right;
+    padding-right: 0.5rem !important;
+}
+
+.col-ubigeo-select {
+    flex: 0 0 auto;
+    width: 16.6%; /* Equivale a col-sm-2.5 aprox */
+}
+
+/* Fix for floating labels with large inputs in Bootstrap 5 */
+.form-floating > .form-control-lg {
+  padding-top: 1.625rem;
+  padding-bottom: 0.625rem;
+}
+
+.form-floating > .form-control-lg ~ label {
+  padding: 1rem 0.75rem;
+}
+
+.form-floating > .form-control.is-invalid {
+  border-width: 2px;
+}
+
