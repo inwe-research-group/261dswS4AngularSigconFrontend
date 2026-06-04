@@ -113,6 +113,16 @@ export class RegistrarPersona implements OnInit{
     };
   }
 
+  onEnterKey(event: any): void {
+    event.preventDefault();
+    const form = event.target.form;
+    const index = Array.prototype.indexOf.call(form, event.target);
+    const nextElement = form.elements[index + 1];
+    if (nextElement) {
+      nextElement.focus();
+    }
+  }
+
   getErrorMessage(controlName: string): string {
     const control = this.personaForm.get(controlName);
     if (control?.touched || control?.dirty) {
